@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, ActivityIndicator, StatusBar } from 'react-native';
 import { AuthProvider, useAuth } from './src/context/AuthContext';
 import LoginScreen from './src/screens/LoginScreen';
 import HomeScreen from './src/screens/HomeScreen';
@@ -17,7 +16,7 @@ interface NavState {
 
 function AppContent() {
   const { isAuthenticated, isLoading } = useAuth();
-  const [navState, setNavState] = useState < NavState > ({ screen: 'home' });
+  const [navState, setNavState] = useState<NavState>({ screen: 'home' });
 
   const navigate = (screen: Screen, params?: NavState['params']) => {
     setNavState({ screen, params });
