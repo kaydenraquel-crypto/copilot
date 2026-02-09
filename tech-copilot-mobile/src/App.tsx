@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, ActivityIndicator, StatusBar } from 'react-native';
-import { AuthProvider, useAuth } from './src/context/AuthContext';
-import LoginScreen from './src/screens/LoginScreen';
-import HomeScreen from './src/screens/HomeScreen';
-import TroubleshootScreen from './src/screens/TroubleshootScreen';
-import ManualsScreen from './src/screens/ManualsScreen';
-import ManualViewerScreen from './src/screens/ManualViewerScreen';
+import { StatusBar } from 'expo-status-bar';
+import { StyleSheet, View, ActivityIndicator } from 'react-native';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import LoginScreen from './screens/LoginScreen';
+import HomeScreen from './screens/HomeScreen';
+import TroubleshootScreen from './screens/TroubleshootScreen';
+import ManualsScreen from './screens/ManualsScreen';
+import ManualViewerScreen from './screens/ManualViewerScreen';
 
 type Screen = 'home' | 'troubleshoot' | 'manuals' | 'manual-viewer' | 'equipment' | 'history';
 
