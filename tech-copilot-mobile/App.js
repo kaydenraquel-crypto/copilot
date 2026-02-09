@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { registerRootComponent } from 'expo';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View, ActivityIndicator } from 'react-native';
 import { AuthProvider, useAuth } from './src/context/AuthContext';
@@ -69,6 +70,8 @@ export default function App() {
     </AuthProvider>
   );
 }
+
+registerRootComponent(App);
 
 const styles = StyleSheet.create({
   container: {
