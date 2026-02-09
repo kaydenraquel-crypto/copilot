@@ -20,7 +20,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.ccr.techcopilot"
+      "package": "com.kportercocom.techcopilotmobile"
     },
     "extra": {
       "eas": {
