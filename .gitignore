@@ -1,0 +1,32 @@
+# Python / Backend
+__pycache__/
+*.pyc
+*.pyo
+venv/
+env/
+.env
+.venv
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Node / Frontend
+node_modules/
+dist/
+.expo/
+web-build/
+.npm/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# OS
+Thumbs.db
+
+# Project Specific
+backend/storage/
+backend/uploads/

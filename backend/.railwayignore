@@ -1,0 +1,13 @@
+# Exclude large directories
+venv/
+.venv/
+ENV/
+__pycache__/
+storage/
+*.pdf
+.git/
+.pytest_cache/
+htmlcov/
+*.pyc
+.env
+.env.local
