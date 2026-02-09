@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { registerRootComponent } from 'expo';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View, ActivityIndicator } from 'react-native';
 import { AuthProvider, useAuth } from './src/context/AuthContext';
@@ -18,7 +17,7 @@ interface NavState {
 
 function AppContent() {
   const { isAuthenticated, isLoading } = useAuth();
-  const [navState, setNavState] = useState<NavState>({ screen: 'home' });
+  const [navState, setNavState] = useState < NavState > ({ screen: 'home' });
 
   const navigate = (screen: Screen, params?: NavState['params']) => {
     setNavState({ screen, params });
@@ -70,8 +69,6 @@ export default function App() {
     </AuthProvider>
   );
 }
-
-registerRootComponent(App);
 
 const styles = StyleSheet.create({
   container: {
