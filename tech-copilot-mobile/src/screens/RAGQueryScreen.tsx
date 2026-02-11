@@ -4,6 +4,7 @@ import {
   FlatList,
   Modal,
   SafeAreaView,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -172,7 +173,12 @@ export default function RAGQueryScreen({ onBack }: RAGQueryScreenProps) {
           <Text style={styles.subtleText}>Loading manuals...</Text>
         </View>
       ) : (
-        <View style={styles.content}>
+        <ScrollView
+          style={styles.content}
+          contentContainerStyle={styles.contentContainer}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
           {!manuals.length ? (
             <View style={styles.emptyState}>
               <Ionicons name="folder-open-outline" size={42} color={COLORS.mist} />
@@ -241,7 +247,7 @@ export default function RAGQueryScreen({ onBack }: RAGQueryScreenProps) {
               )}
             </>
           )}
-        </View>
+        </ScrollView>
       )}
 
       <SelectorModal
@@ -290,6 +296,9 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     padding: 16,
+  },
+  contentContainer: {
+    paddingBottom: 28,
   },
   centered: {
     alignItems: 'center',
@@ -446,4 +455,3 @@ const styles = StyleSheet.create({
     lineHeight: 16,
   },
 });
-

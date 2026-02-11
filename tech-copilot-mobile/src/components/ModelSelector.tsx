@@ -174,7 +174,13 @@ export default function ModelSelector({ selectedModelId, onSelectModel }: ModelS
                             </TouchableOpacity>
                         </View>
 
-                        <ScrollView style={styles.modelList}>
+                        <ScrollView
+                            style={styles.modelList}
+                            contentContainerStyle={styles.modelListContent}
+                            showsVerticalScrollIndicator={true}
+                            nestedScrollEnabled={true}
+                            keyboardShouldPersistTaps="handled"
+                        >
                             <Text style={styles.sectionTitle}>🤖 Smart Selection</Text>
                             {AVAILABLE_MODELS.filter(m => m.id === 'auto').map(renderModelItem)}
 
@@ -230,7 +236,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#0f172a',
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
-        maxHeight: '70%',
+        maxHeight: '82%',
+        overflow: 'hidden',
     },
     modalHeader: {
         flexDirection: 'row',
@@ -246,7 +253,11 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     modelList: {
+        flexGrow: 0,
+    },
+    modelListContent: {
         padding: 16,
+        paddingBottom: 40,
     },
     sectionTitle: {
         color: '#94a3b8',
