@@ -11,7 +11,7 @@ import {
     Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { getManual } from '../services/api';
+import { getManual, getManualPdfUrl } from '../services/api';
 
 interface ManualViewerScreenProps {
     manualId: number;
@@ -59,8 +59,7 @@ export default function ManualViewerScreen({ manualId, onBack, onViewPDF }: Manu
     };
 
     const openPDF = () => {
-        // Open PDF directly in browser (simplest, most reliable)
-        const pdfUrl = `http://192.168.0.253:8000/manuals/${manualId}/pdf`;
+        const pdfUrl = getManualPdfUrl(manualId);
         Linking.openURL(pdfUrl).catch(() => {
             Alert.alert('Error', 'Could not open PDF');
         });

@@ -12,7 +12,8 @@ import {
     Modal,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { getManuals, searchManual } from '../services/api';
+import * as DocumentPicker from 'expo-document-picker';
+import { getManuals, searchManual, uploadManual } from '../services/api';
 import { Manual } from '../types';
 
 interface ManualsScreenProps {
@@ -31,6 +32,14 @@ export default function ManualsScreen({ onBack, onViewManual }: ManualsScreenPro
     const [webManufacturer, setWebManufacturer] = useState('');
     const [webModel, setWebModel] = useState('');
     const [isSearchingWeb, setIsSearchingWeb] = useState(false);
+
+    // Upload modal
+    const [showUploadModal, setShowUploadModal] = useState(false);
+    const [uploadFile, setUploadFile] = useState<{ uri: string; name: string } | null>(null);
+    const [uploadManufacturer, setUploadManufacturer] = useState('');
+    const [uploadModel, setUploadModel] = useState('');
+    const [uploadManualType, setUploadManualType] = useState<string>('service');
+    const [isUploading, setIsUploading] = useState(false);
 
     // Auto-load manuals on mount
     useEffect(() => {
@@ -111,6 +120,64 @@ export default function ManualsScreen({ onBack, onViewManual }: ManualsScreenPro
         }
     };
 
+    const pickDocument = async () => {
+        try {
+            const result = await DocumentPicker.getDocumentAsync({
+                type: 'application/pdf',
+                copyToCacheDirectory: true,
+            });
+            if (result.canceled) return;
+            const asset = result.assets[0];
+            setUploadFile({ uri: asset.uri, name: asset.name || 'manual.pdf' });
+        } catch (e) {
+            Alert.alert('Error', 'Could not pick file');
+        }
+    };
+
+    const handleUpload = async () => {
+        if (!uploadFile) {
+            Alert.alert('Error', 'Please select a PDF file');
+            return;
+        }
+        if (!uploadManufacturer.trim() || !uploadModel.trim()) {
+            Alert.alert('Error', 'Please enter manufacturer and model');
+            return;
+        }
+        setIsUploading(true);
+        try {
+            const response = await uploadManual(
+                { ...uploadFile, type: 'application/pdf' },
+                uploadManufacturer.trim(),
+                uploadModel.trim(),
+                uploadManualType,
+                undefined,
+                'All'
+            );
+            const data = response?.data ?? response;
+            Alert.alert(
+                'Upload Complete',
+                data?.message || `Manual uploaded successfully. ${data?.page_count ?? ''} pages.`,
+                [
+                    {
+                        text: 'OK',
+                        onPress: () => {
+                            setShowUploadModal(false);
+                            setUploadFile(null);
+                            setUploadManufacturer('');
+                            setUploadModel('');
+                            setUploadManualType('service');
+                            loadManuals();
+                        },
+                    },
+                ]
+            );
+        } catch (err: any) {
+            Alert.alert('Upload Failed', err?.message || 'Could not upload manual');
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
     const getManualTypeIcon = (type: string) => {
         switch (type) {
             case 'service': return 'construct';
@@ -185,6 +252,16 @@ export default function ManualsScreen({ onBack, onViewManual }: ManualsScreenPro
                 <Ionicons name="chevron-forward" size={20} color="#64748b" />
             </TouchableOpacity>
 
+            {/* Upload Manual Button */}
+            <TouchableOpacity
+                style={styles.uploadButton}
+                onPress={() => setShowUploadModal(true)}
+            >
+                <Ionicons name="cloud-upload" size={20} color="#22c55e" />
+                <Text style={styles.uploadButtonText}>Upload Manual</Text>
+                <Ionicons name="chevron-forward" size={20} color="#64748b" />
+            </TouchableOpacity>
+
             {/* Content */}
             {isLoading ? (
                 <View style={styles.centered}>
@@ -196,7 +273,7 @@ export default function ManualsScreen({ onBack, onViewManual }: ManualsScreenPro
                     <Ionicons name="library-outline" size={64} color="#334155" />
                     <Text style={styles.emptyTitle}>No Manuals Yet</Text>
                     <Text style={styles.emptySubtitle}>
-                        Use "Find Manual Online" to search and download manuals
+                        Use "Find Manual Online" to search or "Upload Manual" to add a PDF
                     </Text>
                 </View>
             ) : (
@@ -269,6 +346,102 @@ export default function ManualsScreen({ onBack, onViewManual }: ManualsScreenPro
                                 <>
                                     <Ionicons name="search" size={20} color="#fff" />
                                     <Text style={styles.modalButtonText}>Search & Download</Text>
+                                </>
+                            )}
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
+
+            {/* Upload Manual Modal */}
+            <Modal
+                visible={showUploadModal}
+                animationType="slide"
+                transparent={true}
+                onRequestClose={() => setShowUploadModal(false)}
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContent}>
+                        <View style={styles.modalHeader}>
+                            <Text style={styles.modalTitle}>📤 Upload Manual</Text>
+                            <TouchableOpacity onPress={() => setShowUploadModal(false)}>
+                                <Ionicons name="close" size={24} color="#94a3b8" />
+                            </TouchableOpacity>
+                        </View>
+                        <Text style={styles.modalSubtitle}>
+                            Select a PDF and enter equipment details. The app will process and add it to your library.
+                        </Text>
+
+                        <TouchableOpacity style={styles.pickFileButton} onPress={pickDocument}>
+                            <Ionicons name="document-attach" size={24} color="#3b82f6" />
+                            <Text style={styles.pickFileText}>
+                                {uploadFile ? uploadFile.name : 'Choose PDF file'}
+                            </Text>
+                        </TouchableOpacity>
+
+                        <View style={styles.modalForm}>
+                            <View style={styles.modalInput}>
+                                <Text style={styles.inputLabel}>Manufacturer</Text>
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="e.g., Traulsen, True"
+                                    placeholderTextColor="#64748b"
+                                    value={uploadManufacturer}
+                                    onChangeText={setUploadManufacturer}
+                                    autoCapitalize="words"
+                                />
+                            </View>
+                            <View style={styles.modalInput}>
+                                <Text style={styles.inputLabel}>Model Number</Text>
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="e.g., G20010, T-49"
+                                    placeholderTextColor="#64748b"
+                                    value={uploadModel}
+                                    onChangeText={setUploadModel}
+                                    autoCapitalize="characters"
+                                />
+                            </View>
+                            <View style={styles.modalInput}>
+                                <Text style={styles.inputLabel}>Manual Type</Text>
+                                <View style={styles.typeRow}>
+                                    {['service', 'parts', 'installation', 'wiring'].map((t) => (
+                                        <TouchableOpacity
+                                            key={t}
+                                            style={[
+                                                styles.typeChip,
+                                                uploadManualType === t && styles.typeChipActive,
+                                            ]}
+                                            onPress={() => setUploadManualType(t)}
+                                        >
+                                            <Text
+                                                style={[
+                                                    styles.typeChipText,
+                                                    uploadManualType === t && styles.typeChipTextActive,
+                                                ]}
+                                            >
+                                                {t}
+                                            </Text>
+                                        </TouchableOpacity>
+                                    ))}
+                                </View>
+                            </View>
+                        </View>
+
+                        <TouchableOpacity
+                            style={[styles.modalButton, isUploading && styles.modalButtonDisabled]}
+                            onPress={handleUpload}
+                            disabled={isUploading}
+                        >
+                            {isUploading ? (
+                                <>
+                                    <ActivityIndicator color="#fff" size="small" />
+                                    <Text style={styles.modalButtonText}>Uploading...</Text>
+                                </>
+                            ) : (
+                                <>
+                                    <Ionicons name="cloud-upload" size={20} color="#fff" />
+                                    <Text style={styles.modalButtonText}>Upload & Process</Text>
                                 </>
                             )}
                         </TouchableOpacity>
@@ -349,6 +522,66 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 16,
         fontWeight: '500',
+    },
+    uploadButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#1e293b',
+        marginHorizontal: 16,
+        marginBottom: 8,
+        padding: 16,
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: '#22c55e',
+        gap: 12,
+    },
+    uploadButtonText: {
+        flex: 1,
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: '500',
+    },
+    pickFileButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#0f172a',
+        borderRadius: 10,
+        padding: 16,
+        borderWidth: 1,
+        borderColor: '#334155',
+        borderStyle: 'dashed',
+        gap: 12,
+        marginBottom: 16,
+    },
+    pickFileText: {
+        color: '#94a3b8',
+        fontSize: 16,
+        flex: 1,
+    },
+    typeRow: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 8,
+    },
+    typeChip: {
+        paddingHorizontal: 14,
+        paddingVertical: 10,
+        borderRadius: 20,
+        backgroundColor: '#0f172a',
+        borderWidth: 1,
+        borderColor: '#334155',
+    },
+    typeChipActive: {
+        backgroundColor: '#1e3a5f',
+        borderColor: '#3b82f6',
+    },
+    typeChipText: {
+        color: '#64748b',
+        fontSize: 14,
+    },
+    typeChipTextActive: {
+        color: '#3b82f6',
+        fontWeight: '600',
     },
     list: {
         padding: 16,

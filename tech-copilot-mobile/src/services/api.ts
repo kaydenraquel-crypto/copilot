@@ -1,7 +1,7 @@
 import * as SecureStore from 'expo-secure-store';
 
-// Production backend URL
-const API_BASE_URL = 'https://backend-production-32f0.up.railway.app';
+// Production backend URL (exported for building PDF URLs etc.)
+export const API_BASE_URL = 'https://backend-production-32f0.up.railway.app';
 
 // Helper function to get auth token
 async function getAuthToken(): Promise<string | null> {
@@ -135,6 +135,48 @@ export const searchManual = async (
     return handleResponse(response);
 };
 
+/** URL to view or download a manual PDF (same backend as API). */
+export const getManualPdfUrl = (manualId: number): string =>
+    `${API_BASE_URL}/manuals/${manualId}/pdf`;
+
+export const uploadManual = async (
+    file: { uri: string; name: string; type?: string },
+    manufacturer: string,
+    model: string,
+    manualType: string = 'service',
+    pdfVersion?: string,
+    serialRange: string = 'All'
+) => {
+    const token = await getAuthToken();
+    const formData = new FormData();
+    formData.append('file', {
+        uri: file.uri,
+        name: file.name || 'manual.pdf',
+        type: file.type || 'application/pdf',
+    } as any);
+    formData.append('manufacturer', manufacturer);
+    formData.append('model', model);
+    formData.append('manual_type', manualType);
+    formData.append('serial_range', serialRange);
+    if (pdfVersion) formData.append('pdf_version', pdfVersion);
+
+    const headers: Record<string, string> = {};
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    // Do not set Content-Type; fetch will set multipart/form-data with boundary
+
+    const response = await fetch(`${API_BASE_URL}/manuals/upload`, {
+        method: 'POST',
+        headers,
+        body: formData,
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || `Upload failed: ${response.status}`);
+    }
+    return response.json();
+};
+
 // System functions
 export const getHealth = async () => {
     const response = await fetchWithAuth('/health');
@@ -156,6 +198,8 @@ const api = {
     getManuals,
     getManual,
     searchManual,
+    uploadManual,
+    getManualPdfUrl,
     getHealth,
     getStats,
 };
