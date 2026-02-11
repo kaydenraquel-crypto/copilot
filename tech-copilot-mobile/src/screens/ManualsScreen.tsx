@@ -18,7 +18,7 @@ import { Manual } from '../types';
 
 interface ManualsScreenProps {
     onBack: () => void;
-    onViewManual?: (manualId: number) => void;
+    onViewManual?: (manualId: string | number) => void;
 }
 
 export default function ManualsScreen({ onBack, onViewManual }: ManualsScreenProps) {
@@ -191,13 +191,17 @@ export default function ManualsScreen({ onBack, onViewManual }: ManualsScreenPro
     const renderManual = ({ item }: { item: Manual }) => (
         <TouchableOpacity style={styles.manualCard} onPress={() => handleManualPress(item)}>
             <View style={styles.manualIcon}>
-                <Ionicons name={getManualTypeIcon(item.manual_type) as any} size={24} color="#3b82f6" />
+                <Ionicons
+                    name={getManualTypeIcon(item.manual_type || item.equipment_type || 'service') as any}
+                    size={24}
+                    color="#3b82f6"
+                />
             </View>
             <View style={styles.manualInfo}>
                 <Text style={styles.manualTitle}>
-                    {item.manufacturer} {item.model}
+                    {(item.manufacturer || item.brand)} {item.model}
                 </Text>
-                <Text style={styles.manualType}>{item.manual_type} Manual</Text>
+                <Text style={styles.manualType}>{item.manual_type || item.equipment_type} Manual</Text>
                 <View style={styles.manualMeta}>
                     <Text style={styles.manualMetaText}>
                         {item.page_count || '?'} pages

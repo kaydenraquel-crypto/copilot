@@ -64,13 +64,40 @@ export interface TroubleshootResponse {
 }
 
 export interface Manual {
-    id: number;
-    manufacturer: string;
+    id: string | number;
+    manufacturer?: string;
+    brand?: string;
     model: string;
-    manual_type: string;
+    manual_type?: string;
+    equipment_type?: string;
+    filename?: string;
+    file_path?: string;
+    indexing_status?: 'pending' | 'complete' | 'failed' | string;
+    indexing_error?: string | null;
+    indexed_at?: string | null;
     file_size_mb?: number;
     page_count?: number;
-    ocr_quality: string;
-    times_accessed: number;
+    ocr_quality?: string;
+    times_accessed?: number;
     created_at: string;
+}
+
+export interface RAGSource {
+    page?: number | null;
+    section?: string | null;
+    excerpt: string;
+}
+
+export interface ManualUsed {
+    id: string;
+    filename: string;
+    brand: string;
+    model: string;
+}
+
+export interface RAGQueryData {
+    answer: string;
+    sources: RAGSource[];
+    manual_used?: ManualUsed | null;
+    manual_available: boolean;
 }

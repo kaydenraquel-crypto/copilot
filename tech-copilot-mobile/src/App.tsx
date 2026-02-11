@@ -7,12 +7,22 @@ import HomeScreen from './screens/HomeScreen';
 import TroubleshootScreen from './screens/TroubleshootScreen';
 import ManualsScreen from './screens/ManualsScreen';
 import ManualViewerScreen from './screens/ManualViewerScreen';
+import ManualLibraryScreen from './screens/ManualLibraryScreen';
+import RAGQueryScreen from './screens/RAGQueryScreen';
 
-type Screen = 'home' | 'troubleshoot' | 'manuals' | 'manual-viewer' | 'equipment' | 'history';
+type Screen =
+  | 'home'
+  | 'troubleshoot'
+  | 'rag-query'
+  | 'manual-library'
+  | 'manuals'
+  | 'manual-viewer'
+  | 'equipment'
+  | 'history';
 
 interface NavState {
   screen: Screen;
-  params?: { manualId?: number };
+  params?: { manualId?: string | number };
 }
 
 function AppContent() {
@@ -39,6 +49,10 @@ function AppContent() {
   switch (navState.screen) {
     case 'troubleshoot':
       return <TroubleshootScreen onBack={() => navigate('home')} />;
+    case 'rag-query':
+      return <RAGQueryScreen onBack={() => navigate('home')} />;
+    case 'manual-library':
+      return <ManualLibraryScreen onBack={() => navigate('home')} />;
     case 'manuals':
       return (
         <ManualsScreen

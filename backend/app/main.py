@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.v1 import auth, manuals, troubleshooting, equipment, system, usage
+from app.api.v1 import auth, manuals, troubleshooting, equipment, query, system, usage
 from app.config import settings
 
 app = FastAPI(
@@ -23,6 +23,7 @@ app.add_middleware(
 # Include routers
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
 app.include_router(manuals.router, prefix="/manuals", tags=["Manuals"])
+app.include_router(query.router, prefix="/query", tags=["RAG Query"])
 app.include_router(troubleshooting.router, prefix="/troubleshoot", tags=["Troubleshooting"])
 app.include_router(equipment.router, prefix="/equipment", tags=["Equipment"])
 app.include_router(usage.router, prefix="/usage", tags=["Usage & Costs"])

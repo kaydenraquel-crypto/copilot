@@ -14,16 +14,18 @@ import { Ionicons } from '@expo/vector-icons';
 import { getManual, getManualPdfUrl } from '../services/api';
 
 interface ManualViewerScreenProps {
-    manualId: number;
+    manualId: string | number;
     onBack: () => void;
     onViewPDF?: (pdfUrl: string, title: string) => void;
 }
 
 interface ManualDetail {
-    id: number;
-    manufacturer: string;
+    id: string | number;
+    manufacturer?: string;
+    brand?: string;
     model: string;
-    manual_type: string;
+    manual_type?: string;
+    equipment_type?: string;
     page_count?: number;
     file_size_mb?: number;
     source?: string;
@@ -111,11 +113,11 @@ export default function ManualViewerScreen({ manualId, onBack, onViewPDF }: Manu
 
         switch (activeSection) {
             case 'overview':
-                return (
+                    return (
                     <View style={styles.sectionContent}>
                         <View style={styles.infoCard}>
                             <Text style={styles.infoLabel}>Manufacturer</Text>
-                            <Text style={styles.infoValue}>{manual.manufacturer}</Text>
+                            <Text style={styles.infoValue}>{manual.manufacturer || manual.brand}</Text>
                         </View>
                         <View style={styles.infoCard}>
                             <Text style={styles.infoLabel}>Model</Text>
@@ -123,7 +125,7 @@ export default function ManualViewerScreen({ manualId, onBack, onViewPDF }: Manu
                         </View>
                         <View style={styles.infoCard}>
                             <Text style={styles.infoLabel}>Manual Type</Text>
-                            <Text style={styles.infoValue}>{manual.manual_type}</Text>
+                            <Text style={styles.infoValue}>{manual.manual_type || manual.equipment_type}</Text>
                         </View>
                         {manual.page_count && (
                             <View style={styles.infoCard}>
@@ -229,7 +231,7 @@ export default function ManualViewerScreen({ manualId, onBack, onViewPDF }: Manu
                     <Ionicons name="arrow-back" size={24} color="#fff" />
                 </TouchableOpacity>
                 <View style={styles.headerTitleContainer}>
-                    <Text style={styles.headerTitle}>{manual.manufacturer}</Text>
+                    <Text style={styles.headerTitle}>{manual.manufacturer || manual.brand}</Text>
                     <Text style={styles.headerSubtitle}>{manual.model}</Text>
                 </View>
                 <View style={{ width: 40 }} />

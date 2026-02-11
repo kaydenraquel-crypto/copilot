@@ -19,32 +19,25 @@ export default function HomeScreen({ onNavigate }: HomeScreenProps) {
 
     const menuItems = [
         {
-            id: 'troubleshoot',
-            title: 'AI Troubleshoot',
-            subtitle: 'Get instant repair guidance',
-            icon: 'build',
-            color: '#3b82f6',
+            id: 'rag-query',
+            title: 'Manual RAG Query',
+            subtitle: 'Ask with cited manual sources',
+            icon: 'sparkles',
+            color: '#D6A85E',
         },
         {
-            id: 'manuals',
-            title: 'Equipment Manuals',
-            subtitle: 'Browse service documentation',
+            id: 'manual-library',
+            title: 'Manual Library',
+            subtitle: 'Upload and manage indexed PDFs',
             icon: 'book',
-            color: '#10b981',
+            color: '#B8743A',
         },
         {
-            id: 'equipment',
-            title: 'Equipment Profiles',
-            subtitle: 'Customer equipment records',
-            icon: 'cube',
-            color: '#8b5cf6',
-        },
-        {
-            id: 'history',
-            title: 'Service History',
-            subtitle: 'Past repairs and diagnostics',
-            icon: 'time',
-            color: '#f59e0b',
+            id: 'troubleshoot',
+            title: 'Classic Troubleshoot',
+            subtitle: 'General AI diagnosis flow',
+            icon: 'build',
+            color: '#4F8FA5',
         },
     ];
 

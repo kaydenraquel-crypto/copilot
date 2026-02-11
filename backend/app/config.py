@@ -23,6 +23,7 @@ class Settings(BaseSettings):
     
     # Storage
     STORAGE_PATH: str = "./storage"
+    MANUAL_STORAGE_PATH: Optional[str] = None
     
     # CORS - parse as JSON string
     CORS_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:8000"]
